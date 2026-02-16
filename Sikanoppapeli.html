@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+    <title>Sikanoppapeli</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Let's Play</h1>
+
+        <div class="dice">
+            <p id="player1" class="Player1"></p>
+
+           
+            <div class="score-box">
+                <span class="score-label">Turns Score</span>
+                <span id="score1" class="score-value">0</span>
+
+                
+            </div>
+
+            <div class="score-box">
+                <span class="score-label">Total Score</span>
+                <span id="score1total" class="score-value">0</span>
+            </div>
+
+            <img id="dice1" class="img1" src="dice-2.png" width="200" height="200">
+            <img id="dice1b" class="img1" src="dice-2.png" width="200" height="200" style="display:none;">
+        </div>
+
+        <div class="dice">
+            <p id="player2" class="Player2"></p>
+
+          
+            <div class="score-box">
+                <span class="score-label">Turns Score</span>
+                <span id="score2" class="score-value">0</span>
+            </div>
+
+             <div class="score-box">
+                <span class="score-label">Total Score</span>
+                <span id="score2total" class="score-value">0</span>
+            </div>
+
+            <img id="dice2" class="img2" src="dice-1.png" width="200" height="200">
+            <img id="dice2b" class="img2" src="dice-1.png" width="200" height="200" style="display:none;">
+        </div>
+    </div>
+
+    <div class="container bottom">
+        <button type="button" class="butn" onClick="rollDice()">
+            Heitä noppaa
+        </button>
+    </div>
+
+    <div class="container bottom">
+        <button type="button" class="butn" onClick="changeTurn()">
+            Lopeta heittäminen
+        </button>
+    </div>
+
+    <div class="container bottom">
+        <button type="button" class="butn" onClick="Rematch()">
+            Aloita peli alusta
+        </button>
+    </div>
+
+    <div class = "winscreen">
+         <p id="message"></p>
+    </div>
+
+    
+
+
+    <img id="dice" src="dice-1.png" style="display:none;">
+
+    <script>
+        document.querySelector(".winscreen").style.display = "none";
+        currentplayer = 0;
+        let gamestarted = false;
+        let gameover = false;
+        let tuplanoppa = false;
+        let gameMode = "0";
+        winner = ""
+        
+      
+        
+
+        let player1name = prompt("Syötä pelaajan 1 nimi");
+        let player2name = prompt("Syötä pelaajan 2 nimi");
+        gameMode = prompt("Valitse pelimuoto: 1 = yksi noppa, 2 = kaksi noppaa");
+        gamestarted = true;
+
+           if (gameMode === "2") {
+      
+        document.getElementById("dice1b").style.display = "inline";
+        document.getElementById("dice2b").style.display = "inline";
+    } else {
+        document.getElementById("dice1b").style.display = "none";
+   
+        document.getElementById("dice2b").style.display = "none";
+    }
+
+       
+
+       const players = [
+    { name: player1name,
+        totalscore: 0,
+        turnscore: 0 },
+    { name: player2name,
+        totalscore: 0,
+        turnscore: 0
+     }
+];
+
+        function getCurrentPlayer() {
+            return players[currentplayer]; 
+}
+
+
+      function addScore(playerIndex, points) {
+    players[playerIndex].turnscore += points;
+    document.getElementById("score" + (playerIndex + 1)).textContent = players[playerIndex].turnscore;
+    
+
+    if (players[playerIndex].totalscore >= 100) {
+        //katsotaan onko joku voittanut
+        winner = players[playerIndex].name;
+        gameover = true;
+        document.getElementById("message").textContent =
+            "Congratulations " + winner + ", you won!";
+        document.querySelector(".winscreen").style.display = "block";
+    }
+}
+
+   function Rematch(){
+   
+     gameMode = prompt("Valitse pelimuoto: 1 = yksi noppa, 2 = kaksi noppaa");
+    
+   
+    
+ 
+    if (gameMode === "2") {
+        document.getElementById("dice1b").style.display = "inline";
+        document.getElementById("dice2b").style.display = "inline";
+    } else {
+        document.getElementById("dice1b").style.display = "none";
+        document.getElementById("dice2b").style.display = "none";
+    }
+    
+    gamestarted = true;
+    gameover = false;
+    currentplayer = 0;
+    
+    
+    document.querySelectorAll(".score-value").forEach(score => {
+        score.textContent = 0;
+    })
+   
+    players.forEach(player => {
+        player.totalscore = 0;
+        player.turnscore = 0;
+    });
+
+    document.querySelector(".winscreen").style.display = "none";
+    document.getElementById("message").textContent = "";
+}
+
+          
+        
+    
+
+
+        function changeTurn() {
+    
+    if(tuplacounter !== 3){
+        players[currentplayer].totalscore += players[currentplayer].turnscore;
+    }
+    
+
+    
+    document.getElementById("score" + (currentplayer + 1) + "total").textContent =
+        players[currentplayer].totalscore;
+
+ 
+    players[currentplayer].turnscore = 0;
+    document.getElementById("score" + (currentplayer + 1)).textContent = 0;
+
+    
+    if (players[currentplayer].totalscore >= 100) {
+    winner = players[currentplayer].name;
+    gameover = true;
+    document.getElementById("message").textContent =
+        "Congratulations " + winner + ", you won!";
+    document.querySelector(".winscreen").style.display = "block";
+    return;
+}
+
+   
+
+    if(currentplayer === 0){
+        currentplayer = 1;
+    } else {
+        currentplayer = 0;
+    }
+
+    tuplacounter = 0;
+}
+
+
+
+function onecheck(dice, dice2, playerNum){
+    let secondDice = document.getElementById("dice" + playerNum + "b"); 
+
+    if(secondDice.style.display !== "none"){  
+        if (dice === 1 && dice2 === 1) {
+            players[currentplayer].turnscore += 25;  
+            document.getElementById("score" + (currentplayer + 1)).textContent =
+            players[currentplayer].turnscore;
+            console.log("25 pistettä tuplaykköset");
+            return true;  
+}
+
+
+        if(dice === 1 || dice2 === 1){
+            players[currentplayer].turnscore = 0;
+            document.getElementById("score" + (currentplayer + 1)).textContent = 0;
+            changeTurn();
+            return true;
+        }
+        return false;
+
+    } else {
+        if(dice === 1){
+            players[currentplayer].turnscore = 0;
+            document.getElementById("score" + (currentplayer + 1)).textContent = 0;
+            changeTurn();
+            return true;
+        }
+        return false;
+    }
+}
+
+
+
+
+
+
+   let tuplacounter = 0;
+function rollDice() {  
+    if(!gamestarted || gameover){
+        return;
+    }
+  
+    let dice = Math.floor(Math.random() * 6) + 1;
+    let dice2 = Math.floor(Math.random() * 6) + 1;
+    let playerNum = currentplayer + 1;
+
+    console.log(players[currentplayer].turnscore);
+   
+    
+   
+    document.getElementById("dice" + playerNum).src = "dice-" + dice + ".png";
+    
+   
+    let secondDice = document.getElementById("dice" + playerNum + "b");
+    
+    if(secondDice.style.display !== "none"){  
+        
+        secondDice.src = "dice-" + dice2 + ".png";
+        
+        //jos kahden nopan versiossa on tullut ykkönen, poistutaan rolldice()
+        if(onecheck(dice, dice2, playerNum)){  
+            return;
+        }
+        
+        
+
+        if(dice === dice2){
+            tuplacounter++;
+            
+
+            if(tuplacounter === 3){
+            players[currentplayer].turnscore = 0;  
+            document.getElementById("score" + (currentplayer + 1)).textContent = 0; 
+            changeTurn();
+
+            return;
+}
+
+             
+                players[currentplayer].turnscore += (dice + dice2) * 2;
+                document.getElementById("score" + (currentplayer + 1)).textContent =
+                players[currentplayer].turnscore;
+            
+
+        } else {
+                tuplacounter = 0;
+                players[currentplayer].turnscore += dice + dice2;
+                document.getElementById("score" + (currentplayer + 1)).textContent =
+                players[currentplayer].turnscore;
+
+        }
+        
+    } else { 
+        //jos yhden nopan versiossa on tullut ykkönen, poistutaan rollDice()
+        if(onecheck(dice, 0, playerNum)){  
+            return;
+        }
+        
+        players[currentplayer].turnscore += dice;
+        document.getElementById("score" + (currentplayer + 1)).textContent =
+            players[currentplayer].turnscore;
+    }
+}
+
+
+    document.getElementById("player1").textContent = player1name;
+    document.getElementById("player2").textContent = player2name;
+
+
+ 
+
+    </script>
+</body>
+
+</html>
+
+<style>
+    .winscreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(35, 41, 49, 0.95);
+    padding: 40px 60px;
+    border-radius: 20px;
+    border: 3px solid #4ecca3;
+    z-index: 1000;
+}
+
+.winscreen p {
+    margin: 0;
+    font-size: 3rem;
+    color: #4ecca3;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+    .container {
+        width: 70%;
+        margin: auto;
+        text-align: center;
+    }
+
+    .dice {
+        text-align: center;
+        display: inline-block;
+        margin: 10px;
+        background: #063a5c;
+        padding: 20px;
+        border-radius: 12px;
+        min-width: 220px;
+    }
+
+    body {
+        background-color: #042f4b;
+        margin: 0;
+    }
+
+    h1 {
+        margin: 30px;
+        font-family: "Lobster", cursive;
+        text-shadow: 5px 0 #232931;
+        font-size: 4.5rem;
+        color: #4ecca3;
+        text-align: center;
+    }
+
+    p {
+        font-size: 2rem;
+        color: #4ecca3;
+        font-family: "Indie Flower", cursive;
+        margin-bottom: 10px;
+    }
+
+   
+    .score-box {
+        background: #232931;
+        border-radius: 8px;
+        padding: 8px 0;
+        margin-bottom: 15px;
+    }
+
+    .score-label {
+        display: block;
+        font-size: 1rem;
+        color: #aaaaaa;
+        font-family: Arial, sans-serif;
+    }
+
+    .score-value {
+        font-size: 2.2rem;
+        color: #4ecca3;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+    }
+
+    img {
+        width: 100%;
+    }
+
+    .bottom {
+        padding-top: 30px;
+    }
+
+    .butn {
+        background: #4ecca3;
+        font-family: "Indie Flower", cursive;
+        border-radius: 7px;
+        color: #ffff;
+        font-size: 30px;
+        padding: 16px 25px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .butn:hover {
+        background: #232931;
+        text-decoration: none;
+    }
+</style>
